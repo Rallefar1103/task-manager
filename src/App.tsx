@@ -1,25 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { useCallback, useEffect, useState } from "react";
+import "./App.css";
+import TaskForm from "./components/taskForm";
+import { useFetchTasks } from "./service/taskManager";
 
 function App() {
+  const { fetchTasks, tasks, isLoading } = useFetchTasks();
+
+  useEffect(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
+  const handleTaskCreated = useCallback(() => {
+    fetchTasks();
+  }, [fetchTasks]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <section id="task-manager">
+      <h1 className="header-title"> Task Manager </h1>
+      <TaskForm onTaskCreated={handleTaskCreated} />
+      {isLoading ? (
+        <div>Loading tasks...</div>
+      ) : (
+        <div className="task-list">
+          {tasks.length === 0 ? (
+            <div>You don't have any tasks yet!</div>
+          ) : (
+            tasks.map((task, index) => (
+              <div key={index}>
+                {task.title} - {task.completed ? "Completed" : "Not Completed"}
+              </div>
+            ))
+          )}
+        </div>
+      )}
+    </section>
   );
 }
 

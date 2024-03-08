@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const axios = require("axios");
 const Task = require("../models/task");
 
 router.post("/", async (req, res) => {
+  console.log("Creating new task with title ", req.body);
   try {
     const { title, completed } = req.body;
     const newTask = new Task({
@@ -17,7 +17,15 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {});
+router.get("/", async (req, res) => {
+  console.log("Fetching all tasks!");
+  try {
+    const tasks = await Task.find();
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 router.get("/:taskId", async (req, res) => {});
 
